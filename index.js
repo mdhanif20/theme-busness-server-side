@@ -39,9 +39,11 @@ async function run(){
 
         // for sending data on database
         const database = client.db("ThemeSelling");
-        const appointmentCollection = database.collection("hosting");
-        const domainCollection = database.collection("domain");
+        const themeCollection = database.collection("Theme");
+        const hostingPurchaseCollection = database.collection("hostingPurchase");
+        const domainPurchaseCollection = database.collection("domainPurchase");
         const usersCollection = database.collection("users");
+        const themePurchaseCollection = database.collection("ThemePurchase");
         
       /*   app.get("/deshboard/appointments",async(req,res)=>{
           const appointments = appointmentCollection.find({});
@@ -69,8 +71,15 @@ async function run(){
           const appointments = await result.toArray();
           res.json(appointments);
         })
- */
-      /*   app.get("/users/:email",async(req,res)=>{
+ */   
+
+      app.get("/themes",async(req,res)=>{
+        const theme = themeCollection.find({});
+        const result = await theme.toArray();
+        res.send(result);
+      })  
+
+      app.get("/users/:email",async(req,res)=>{
           const email = req.params.email;
           const query = {email:email};
           const user = await usersCollection.findOne(query);
@@ -79,23 +88,36 @@ async function run(){
               isAdmin = true;
           }
           res.json({admin:isAdmin})
-        })
- */
+        }) 
+ 
         app.post("/hosting",async(req,res)=>{
           const buyhosting = req.body;
-          const result = await appointmentCollection.insertOne(buyhosting);
+          const result = await hostingPurchaseCollection.insertOne(buyhosting);
           res.json(result)
         })
 
         app.post("/domain",async(req,res)=>{
           const buydomain = req.body;
-          const result = await domainCollection.insertOne(buydomain);
+          const result = await domainPurchaseCollection.insertOne(buydomain);
+          res.json(result)
+        })
+        
+
+        app.post("/themeBuy",async(req,res)=>{
+          const buyWebsite = req.body;
+          const result = await themePurchaseCollection.insertOne(buyWebsite);
           res.json(result)
         })
         
         app.post("/users",async(req,res)=>{
           const user = req.body;
           const result = await usersCollection.insertOne(user);
+          res.json(result)
+        })
+
+        app.post("/deshboard/addTheme",async(req,res)=>{
+          const user = req.body;
+          const result = await themeCollection.insertOne(user);
           res.json(result)
         })
 
@@ -108,7 +130,7 @@ async function run(){
           res.json(result);
         }) */
         
-     /*    app.put('/users/admin',verifyToken,async(req,res)=>{
+     app.put('/users/admin',verifyToken,async(req,res)=>{
           const user= req.body;
           const requester = req.decodedEmail;
           if(requester){
@@ -124,7 +146,7 @@ async function run(){
           else{
             res.status(403).json({message:"You don't have access to make admin."})
           }
-        }) */
+        }) 
 
         
     }
