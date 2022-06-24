@@ -40,45 +40,18 @@ async function run(){
         // for sending data on database
         const database = client.db("ThemeSelling");
         const themeCollection = database.collection("Theme");
+        const domainCollection = database.collection("Domain");
+        const hostingCollection = database.collection("Hosting");
+        const storageCollection = database.collection("Storage");
+        const storagePurchaseCollection = database.collection("StoragePurchase");
         const hostingPurchaseCollection = database.collection("hostingPurchase");
         const domainPurchaseCollection = database.collection("domainPurchase");
         const usersCollection = database.collection("users");
         const themePurchaseCollection = database.collection("ThemePurchase");
         
-      /*   app.get("/deshboard/appointments",async(req,res)=>{
-          const appointments = appointmentCollection.find({});
-          const result = await appointments.toArray();
-          res.send(result)
-        }) */
-        /* app.put('/deshboard/appointments',async(req,res)=>{
-          const user= req.body;
-          console.log(user)
-          const filter = {_id: user.id};
-          console.log(filter)
-          const updateDoc = {
-            $set: {
-              visited:"Visited"
-            }
-          }
-          const result = await appointmentCollection.updateOne(filter,updateDoc)
-          res.json(result)
-        }) */
-      /*   app.get("/appointments",verifyToken,async(req,res)=>{
-          const email = req.query.email;
-          const date = req.query.date ;
-          const query = {email:email, date:date};
-          const result = appointmentCollection.find(query);
-          const appointments = await result.toArray();
-          res.json(appointments);
-        })
- */   
+     
 
-      app.get("/themes",async(req,res)=>{
-        const theme = themeCollection.find({});
-        const result = await theme.toArray();
-        res.send(result);
-      })  
-
+      //search admin or not admin
       app.get("/users/:email",async(req,res)=>{
           const email = req.params.email;
           const query = {email:email};
@@ -89,39 +62,61 @@ async function run(){
           }
           res.json({admin:isAdmin})
         }) 
- 
+        
+        //push purchase hosting data in the database
         app.post("/hosting",async(req,res)=>{
           const buyhosting = req.body;
           const result = await hostingPurchaseCollection.insertOne(buyhosting);
           res.json(result)
         })
 
+        //push purchase domain data in the database
         app.post("/domain",async(req,res)=>{
           const buydomain = req.body;
           const result = await domainPurchaseCollection.insertOne(buydomain);
           res.json(result)
         })
         
-
+        //push purchase theme data in the database
         app.post("/themeBuy",async(req,res)=>{
           const buyWebsite = req.body;
           const result = await themePurchaseCollection.insertOne(buyWebsite);
           res.json(result)
         })
         
+        //push users data in database
         app.post("/users",async(req,res)=>{
           const user = req.body;
           const result = await usersCollection.insertOne(user);
           res.json(result)
         })
 
-        app.post("/deshboard/addTheme",async(req,res)=>{
-          const user = req.body;
-          const result = await themeCollection.insertOne(user);
-          res.json(result)
-        })
+       /* ------------- storage area start  ------------ */
+       app.get("/storage",async(req,res)=>{
+        const theme = storageCollection.find({});
+        const result = await theme.toArray();
+        res.send(result);
+      })  
 
-       /*  app.put('/users',async(req,res)=>{
+       //push storage data in the database
+       app.post("/purchasedStorage",async(req,res)=>{
+        const buyWebsite = req.body;
+        const result = await storagePurchaseCollection.insertOne(buyWebsite);
+        res.json(result)
+      })
+      //purchasedStorage get based on email address
+      app.get("/purchasedStorage",verifyToken,async(req,res)=>{
+        const email = req.query.email;
+        const query = {email:email};
+        const result = storagePurchaseCollection.find(query);
+        const themes = await result.toArray();
+        res.json(themes);
+      })
+
+        /* ------------- storage area end  ------------ */
+        
+
+        /* app.put('/users',async(req,res)=>{
           const user= req.body;
           const filter = {email: user.email};
           const options = {upsert:true};
@@ -130,6 +125,7 @@ async function run(){
           res.json(result);
         }) */
         
+     // verify id token for more suecure website and update user data add admin  
      app.put('/users/admin',verifyToken,async(req,res)=>{
           const user= req.body;
           const requester = req.decodedEmail;
@@ -147,8 +143,168 @@ async function run(){
             res.status(403).json({message:"You don't have access to make admin."})
           }
         }) 
+       
+       /*--------------  customer purchased inf. start ----------*/
+        //get purchased theme based on email
+       app.get("/purchasedTheme",verifyToken,async(req,res)=>{
+        const email = req.query.email;
+        const query = {email:email};
+        const result = themePurchaseCollection.find(query);
+        const themes = await result.toArray();
+        res.json(themes);
+      })
+        //get purchased domain based on email
+       app.get("/purchasedDomain",verifyToken,async(req,res)=>{
+        const email = req.query.email;
+        const query = {email:email};
+        const result = domainPurchaseCollection.find(query);
+        const themes = await result.toArray();
+        res.json(themes);
+      })
+        //get purchased hosting based on email
+       app.get("/purchasedHosting",verifyToken,async(req,res)=>{
+        const email = req.query.email;
+        const query = {email:email};
+        const result = hostingPurchaseCollection.find(query);
+        const hosting = await result.toArray();
+        res.json(hosting);
+      })
 
-        
+       /*--------------  customer purchased inf. end ----------*/
+
+
+
+
+
+        /*------------- admin panel area code start----------- */ 
+
+        //get theme from database  
+        app.get("/themes",async(req,res)=>{
+          const theme = themeCollection.find({});
+          const result = await theme.toArray();
+          res.send(result);
+        })  
+
+        //get domain from database  
+        app.get("/domain",async(req,res)=>{
+          const theme = domainCollection.find({});
+          const result = await theme.toArray();
+          res.send(result);
+        })  
+
+         //push add new theme in database
+         app.post("/deshboard/domain",async(req,res)=>{
+          const user = req.body;
+          const result = await domainCollection.insertOne(user);
+          res.json(result)
+        }) 
+
+        //update domain 
+        app.put("/domain/:id",async(req,res)=>{
+          const id = req.params.id;
+          const updatedTheme = req.body;
+          const filter = { _id: ObjectId(id)};
+          const options = { upsert: true };
+          const updateDoc = {
+              $set: {
+                suffix: updatedTheme.suffix,
+                price: updatedTheme.price
+              },
+            };
+          const result = await domainCollection.updateOne(filter,updateDoc,options)
+          res.json(result)
+      })
+
+       // delete domain from database
+       app.delete("/domain/:id", async(req,res)=>{
+        const id = req.params.id;
+        const query = { _id:ObjectId(id) }
+        const result =  await domainCollection.deleteOne(query)
+        res.json(result)
+      })
+
+
+        //push add new theme in database
+        app.post("/deshboard/addTheme",async(req,res)=>{
+          const user = req.body;
+          const result = await themeCollection.insertOne(user);
+          res.json(result)
+        })  
+
+        //update theme
+        app.put("/theme/:id",async(req,res)=>{
+          const id = req.params.id;
+          const updatedTheme = req.body;
+          const filter = { _id: ObjectId(id)};
+          const options = { upsert: true };
+          const updateDoc = {
+              $set: {
+                price: updatedTheme.price,
+                review: updatedTheme.review,
+                totalReview: updatedTheme.totalReview,
+                details: updatedTheme.details,
+                websiteName: updatedTheme.websiteName,
+                websiteImg: updatedTheme.websiteImg,
+                clientCodeLink: updatedTheme.clientCodeLink,
+                serverCodeLink: updatedTheme.serverCodeLink,
+                liveSide: updatedTheme.liveSide
+              },
+            };
+          const result = await themeCollection.updateOne(filter,updateDoc,options)
+          res.json(result)
+      })
+
+      // delete theme from database
+        app.delete("/theme/:id", async(req,res)=>{
+          const id = req.params.id;
+          const query = { _id:ObjectId(id) }
+          const result =  await themeCollection.deleteOne(query)
+          res.json(result)
+      }) 
+
+      //get hosting from databas  
+      app.get("/hosting",async(req,res)=>{
+        const theme = hostingCollection.find({});
+        const result = await theme.toArray();
+        res.send(result);
+
+      //push add new hosting in database
+      app.post("/deshboard/hosting",async(req,res)=>{
+        const user = req.body;
+        const result = await hostingCollection.insertOne(user);
+        res.json(result)
+      })
+
+          //update hosting
+          app.put("/hosting/:id",async(req,res)=>{
+            const id = req.params.id;
+            const updatedTheme = req.body;
+            const filter = { _id: ObjectId(id)};
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                  type: updatedTheme.type,
+                  speed: updatedTheme.speed,
+                  scalable: updatedTheme.scalable,
+                  deshboard: updatedTheme.deshboard,
+                  price: updatedTheme.price
+                },
+              };
+            const result = await hostingCollection.updateOne(filter,updateDoc,options)
+            res.json(result)
+        })
+
+      // delete hosting from database
+      app.delete("/hosting/:id", async(req,res)=>{
+        const id = req.params.id;
+        const query = { _id:ObjectId(id) }
+        const result =  await hostingCollection.deleteOne(query)
+        res.json(result)
+    }) 
+})  
+
+      /*------------- admin panel area code end----------- */ 
+
     }
     finally{
         // await client.close(); 
