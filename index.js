@@ -174,6 +174,30 @@ async function run(){
 
 
 
+       /*------------ all purchased area start ---------------- */
+       
+       app.get("/allPurchasedTheme",verifyToken,async(req,res)=>{
+        const result = themePurchaseCollection.find({});
+        const themes = await result.toArray();
+        res.json(themes);
+      })
+
+       app.get("/allPurchasedDomain",verifyToken,async(req,res)=>{
+        const result = domainPurchaseCollection.find({});
+        const themes = await result.toArray();
+        res.json(themes);
+      })
+
+       app.get("/allPurchasedHosting",verifyToken,async(req,res)=>{
+        const result = hostingPurchaseCollection.find({});
+        const themes = await result.toArray();
+        res.json(themes);
+      })
+
+
+
+       /*------------ all purchased area end ---------------- */
+
 
 
         /*------------- admin panel area code start----------- */ 
