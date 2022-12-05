@@ -34,7 +34,7 @@ async function verifyToken(req,res,next){
 
 async function run(){
     try{
-        await client.connect();
+        // await client.connect();
 
         // for sending data on database
         const database = client.db("ThemeSelling");
