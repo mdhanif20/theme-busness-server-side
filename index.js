@@ -12,22 +12,7 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qytn8.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-// const serviceAccount = require('./theme-selling-website-firebase-jwt-token.json') 
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT); 
-/*  const serviceAccount = {
-  "type": process.env.type,
-  "project_id":  process.env.project_id,
-  "private_key_id":  process.env.private_key_id,
-  "private_key":  process.env.private_key,
-  "client_email":  process.env.client_email,
-  "client_id":  process.env.client_id,
-  "auth_uri":  process.env.auth_uri,
-  "token_uri":  process.env.token_uri,
-  "auth_provider_x509_cert_url":  process.env.auth_provider_x509_cert_url,
-  "client_x509_cert_url":  process.env.client_x509_cert_url
-} */
-// process.env.FIREBASE_SERVICE_ACCOUNT; 
-// console.log(serviceAccount)
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -49,7 +34,7 @@ async function verifyToken(req,res,next){
 
 async function run(){
     try{
-        await client.connect();
+        // await client.connect();
 
         // for sending data on database
         const database = client.db("ThemeSelling");
@@ -62,20 +47,6 @@ async function run(){
         const domainPurchaseCollection = database.collection("domainPurchase");
         const usersCollection = database.collection("users");
         const themePurchaseCollection = database.collection("ThemePurchase");
-        
-     
-
-/* 
-type = "service_account"
-project_id="theme-selling-website"
-private_key_id="7a782d1175a0dc95c6544d08108000a9761cffbd"
-private_key="-----BEGIN PRIVATE KEY-----\\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCtJumdHP5SMEcL\\nTrEF4I+D8TEi6BDOlzFbUiT6CSrbYD99i9SDZ7n9xN3CO2U5uRQoiulu+TnqWhnJ\\nUCzsoy/Puws+vK5cqKCs1Bl1vHwwgQyabeSExu0183wb1amJhDoDewwYgXiNmJxg\\nDCzquojprCDRxot9alAme9zlXf2i6FOLenXesplOqSSgK6GlLOBxPiqd42ZWUm7s\\n3pMlvXVBTEjmPCjg80m63KDgGu+Pw0k3Tjr5Hc4kbGboBbCMHchBqW6Gxt/gAaQ+\\n9a9+JGSPEniG5hLNISOeP+UgmPJcuqg5FOaNlfbMIEiMhN+n8FxccJqGAMWYR2wd\\niKnCsBtRAgMBAAECggEAD3ylmqso5uWXhrmumEJ6EG7zTXAPoZK6h04rekuonPKy\\nXkKYxHoNRvCjqKEF9qnVojyudug55GEG4ZxXFrR2OcojTgsaCbXLAG1/q3arOu4u\\nWBlDiuN9L8nYpc3jk7+sx3pRd72llsos4Za+y7qmAhRzSQZmz1X1CxDudHts8w2K\\nIqLdqHA4bh2UKq6cpMMB9IGCzkQN7/jMRD9TwZb2bS2k6N0SnbWejBZqnM/bKwDs\\nftFZ2htRziKmA6Y48dXXI1rROD0zmuZDg4Lw4v6zRv1Ezmbp8YzRLUiAZ5TWAdiI\\nif1PN7CZps9MWoyrQ31aD8unZnFwtr7G7OHGTMO/OwKBgQDooAnz3lSkN3AmpaSt\\n9+qdVNTl86YziWVi+hYdTSnnZHSzMYdQj3V3xsPbud/eJfjHCrX0Kq6qa2NCHJ1u\\nuulcKPhf1LIvB7+x8gjoTMkYLZx168B9/icU6MSD+dVYfDdf9OWa7U8WXBulELpO\\nD6AELhTOhYTw9+3WBV3m6TYgxwKBgQC+jQJKJ/muL3uXIS7wsw1TMN+nLPNi0FXW\\n05Zjgb+kRQjui7y7uMggug+TredAQ23CbLJPxAB3ZyMa+Pc2mo6WRsBhDoTVUPn3\\nxziRonZghfcrfoo2Hhe+03S2C12y1kzbdAbahVn6RRkgmwei9zYB11j2cZrIo3/L\\nA+KYmkL7JwKBgQCkuQazKCFZc2Q4CZ1WDzKUHAjxmBl9bvJbJunX79cXYhv887p0\\nwlEU8quoALPUc6D5GM2FS2AJjydnHiogybwLJXvTKCLQiLUmRVQnYpAXTdz352uU\\nDA8SkEzvg06ebL8tdJXNofMZyzlMJk82jXvq2dKj9woPNBC3N2+p3kQU6wKBgCTQ\\nrZ6SNqU2u1Qprx4GGg72pF9ySdvPkKYe3zF+gf5E8ELWcLJ8Mv5PtG697K332R71\\nTUYoAkcPgDLX4zuDhQT3ynd2DKgCKyl6Li3FC8X+XBDlM+Lc0Y2m4SfC7ml9CgBk\\nXGaf2RCHhSFNkp4j0SVt69xBerxFCo24xHDjbQmFAoGBAOaIR0bRLNgRLMqRJRa1\\n0sViSkZooj3QD/8p3xlGMKq4gR7ZW1QiQLKYFJdLhW1bfWfRoGgqct9FsbrmK5ds\\ny2En/0I+rhe0pT5osKa8zfMN+la8q/ZIJVwAvsVJsRyi2/KKZfQmbjgfam8mGOH2\\n3cvNQVEmR4ZU4iEVdTBo6uY7\\n-----END PRIVATE KEY-----\\n"
-client_email="firebase-adminsdk-85iue@theme-selling-website.iam.gserviceaccount.com"
-client_id="114148673549115502555"
-auth_uri="https://accounts.google.com/o/oauth2/auth"
-token_uri="https://oauth2.googleapis.com/token"
-auth_provider_x509_cert_url="https://www.googleapis.com/oauth2/v1/certs"
-client_x509_cert_url="https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-85iue%40theme-selling-website.iam.gserviceaccount.com" */
 
 
 
