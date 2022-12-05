@@ -114,15 +114,6 @@ async function run(){
 
         /* ------------- storage area end  ------------ */
         
-
-        /* app.put('/users',async(req,res)=>{
-          const user= req.body;
-          const filter = {email: user.email};
-          const options = {upsert:true};
-          const updateDoc = {$set:user};
-          const result = await usersCollection.updateOne(filter,updateDoc,options)
-          res.json(result);
-        }) */
         
      // verify id token for more suecure website and update user data add admin  
      app.put('/users/admin',verifyToken,async(req,res)=>{
@@ -344,10 +335,3 @@ app.listen(port, () => {
   console.log(`listening on port ${port}`)
 })
 
-
-
- /* app.get("/users")
-    app.get("/users/:id")
-    app.post("/users")
-    app.put("/users/:id")
-    app.delete("/users/:id") */
