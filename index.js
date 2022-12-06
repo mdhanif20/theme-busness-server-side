@@ -328,7 +328,7 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-  res.send('Hello Doctors Portal Server.')
+  res.send('Theme Domain Hosting Selling Server.')
 })
 
 app.listen(port, () => {
